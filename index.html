@@ -26,7 +26,7 @@
       --dim: #555570;
       --found: #00ff88;
       --selected: rgba(0,245,255,0.25);
-      --cell: 36px;
+      --cell: min(36px, calc((100vw - 24px) / 14));
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -234,7 +234,6 @@
 
     /* Mobile tweaks */
     @media (max-width: 400px) {
-      :root { --cell: 30px; }
       .cell { font-size: 0.75rem; }
     }
   </style>
@@ -575,4 +574,3 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
-
