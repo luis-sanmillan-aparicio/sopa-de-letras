@@ -315,11 +315,18 @@ function buildGrid() {
   grid = Array.from({length: GRID_SIZE}, () => Array(GRID_SIZE).fill(''));
   wordCells = {};
 
-  // Intentar colocar cada palabra
   const shuffled = [...words].sort(() => Math.random() - 0.5);
-  for (const word of shuffled) {
-    placeWord(word);
-  }
+  const diagDirs = shuffle([[1,1],[1,-1],[-1,1],[-1,-1]]);
+  const anyDirs  = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+
+  shuffled.forEach((word, i) => {
+    if (i < 5) {
+      // Intentar primero en diagonal, si no cabe en cualquier dirección
+      placeWord(word, diagDirs) || placeWord(word, anyDirs);
+    } else {
+      placeWord(word, anyDirs);
+    }
+  });
 
   // Rellenar huecos con letras aleatorias
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -329,17 +336,12 @@ function buildGrid() {
         grid[r][c] = letters[Math.floor(Math.random() * letters.length)];
 }
 
-function placeWord(word) {
-  // Mezclar posiciones
+function placeWord(word, allowedDirs) {
   const positions = shuffle(
     Array.from({length: GRID_SIZE * GRID_SIZE}, (_, i) => [Math.floor(i/GRID_SIZE), i%GRID_SIZE])
   );
-
-  // Intentar primero con dirección aleatoria pura (favorece diagonales estadísticamente)
-  const allDirs = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
-
   for (const [r, c] of positions) {
-    const dirs = shuffle([...allDirs]);
+    const dirs = shuffle([...allowedDirs]);
     for (const [dr, dc] of dirs) {
       if (canPlace(word, r, c, dr, dc)) {
         doPlace(word, r, c, dr, dc);
