@@ -1,43 +1,10 @@
-// api/words.js — Vercel Serverless Function
-// Sirve palabras aleatorias mezclando todo el banco
-
-const GITHUB_RAW_URL =
-  "https://raw.githubusercontent.com/luis-sanmillan-aparicio/sopa-de-letras/main/words.json";
-
-const WORDS_PER_GAME = 10;
-
-export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
-
-  try {
-    const response = await fetch(GITHUB_RAW_URL);
-    if (!response.ok) throw new Error(`GitHub fetch failed: ${response.status}`);
-    const data = await response.json();
-
-    // Mezclar todas las palabras de todas las categorías en un único pool
-    const pool = [];
-    for (const cat of Object.values(data.categories)) {
-      pool.push(...cat.words);
-    }
-
-    const selected = shuffle([...pool]).slice(0, WORDS_PER_GAME);
-
-    return res.status(200).json({ words: selected, count: selected.length });
-  } catch (err) {
-    console.error("Error fetching words:", err);
-    return res.status(500).json({ error: "No se pudieron cargar las palabras", detail: err.message });
+{
+  "categories": {
+    "videojuegos": {
+      "label": "Videojuegos",
+      "emoji": "🎮",
+      "words": ["MARIO", "ZELDA", ...]
+    },
+    ...
   }
-}
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
 }
