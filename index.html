@@ -330,12 +330,16 @@ function buildGrid() {
 }
 
 function placeWord(word) {
-  const dirs = shuffle([[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]);
+  // Mezclar posiciones
   const positions = shuffle(
     Array.from({length: GRID_SIZE * GRID_SIZE}, (_, i) => [Math.floor(i/GRID_SIZE), i%GRID_SIZE])
   );
 
+  // Intentar primero con dirección aleatoria pura (favorece diagonales estadísticamente)
+  const allDirs = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+
   for (const [r, c] of positions) {
+    const dirs = shuffle([...allDirs]);
     for (const [dr, dc] of dirs) {
       if (canPlace(word, r, c, dr, dc)) {
         doPlace(word, r, c, dr, dc);
