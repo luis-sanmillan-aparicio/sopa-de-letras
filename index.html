@@ -308,7 +308,7 @@ async function newGame() {
   setStatus('');
 
   try {
-    const res = await fetch(API_BASE);
+    const res = await fetch(`${API_BASE}?t=${Date.now()}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
 
@@ -591,4 +591,5 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
+
 
