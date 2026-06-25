@@ -1,10 +1,12 @@
 // api/words.js — Vercel Serverless Function
-// Sirve palabras aleatorias mezclando todo el banco
+// Coge palabras aleatorias de un diccionario público de español
 
-const GITHUB_RAW_URL =
-  "https://raw.githubusercontent.com/luis-sanmillan-aparicio/sopa-de-letras/main/words.json";
+const DICTIONARY_URL =
+  "https://raw.githubusercontent.com/words/an-array-of-spanish-words/master/index.json";
 
 const WORDS_PER_GAME = 10;
+const MIN_LENGTH = 4;
+const MAX_LENGTH = 10;
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -15,17 +17,20 @@ export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
   try {
-    const response = await fetch(GITHUB_RAW_URL);
-    if (!response.ok) throw new Error(`GitHub fetch failed: ${response.status}`);
-    const data = await response.json();
+    const response = await fetch(DICTIONARY_URL);
+    if (!response.ok) throw new Error(`Dictionary fetch failed: ${response.status}`);
+    const all = await response.json();
 
-    // Mezclar todas las palabras de todas las categorías en un único pool
-    const pool = [];
-    for (const cat of Object.values(data.categories)) {
-      pool.push(...cat.words);
-    }
+    // Filtrar por longitud y que solo tengan letras (sin tildes raras ni símbolos)
+    const filtered = all.filter(w =>
+      w.length >= MIN_LENGTH &&
+      w.length <= MAX_LENGTH &&
+      /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ]+$/.test(w)
+    );
 
-    const selected = shuffle([...pool]).slice(0, WORDS_PER_GAME);
+    const selected = shuffle([...filtered])
+      .slice(0, WORDS_PER_GAME)
+      .map(w => w.toUpperCase());
 
     return res.status(200).json({ words: selected, count: selected.length });
   } catch (err) {
