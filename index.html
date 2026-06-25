@@ -436,6 +436,16 @@ function renderWordList() {
     chip.className = 'word-chip';
     chip.id = `chip-${w}`;
     chip.textContent = w;
+
+    const highlight = () => { if (!foundWords.has(w)) markHighlight(w, true); };
+    const unhighlight = () => { if (!foundWords.has(w)) markHighlight(w, false); };
+
+    chip.addEventListener('touchstart', highlight, {passive: true});
+    chip.addEventListener('touchend', unhighlight, {passive: true});
+    chip.addEventListener('mousedown', highlight);
+    chip.addEventListener('mouseup', unhighlight);
+    chip.addEventListener('mouseleave', unhighlight);
+
     el.appendChild(chip);
   }
 }
@@ -518,6 +528,13 @@ function markFound(word) {
   }
   const chip = document.getElementById(`chip-${word}`);
   if (chip) chip.classList.add('found');
+}
+
+function markHighlight(word, on) {
+  if (!wordCells[word]) return;
+  for (const {r,c} of wordCells[word]) {
+    cellEls[r][c].classList.toggle('selecting', on);
+  }
 }
 
 function isCellFound(r, c) {
