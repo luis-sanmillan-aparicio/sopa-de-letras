@@ -527,32 +527,48 @@ function drawPill(word) {
   const svg = document.getElementById('overlay');
   const gridRect = gridEl.getBoundingClientRect();
 
-  // Calcular bounding box de las celdas de la palabra
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  for (const {r,c} of cells) {
-    const el = cellEls[r][c];
+  // Centro de la primera y última celda
+  function cellCenter(cell) {
+    const el = cellEls[cell.r][cell.c];
     const rect = el.getBoundingClientRect();
-    const x = rect.left - gridRect.left;
-    const y = rect.top - gridRect.top;
-    minX = Math.min(minX, x);
-    minY = Math.min(minY, y);
-    maxX = Math.max(maxX, x + rect.width);
-    maxY = Math.max(maxY, y + rect.height);
+    return {
+      x: rect.left - gridRect.left + rect.width / 2,
+      y: rect.top - gridRect.top + rect.height / 2,
+      w: rect.width,
+      h: rect.height
+    };
   }
 
-  const pad = 3;
-  const rx = (maxY - minY) / 2 + pad; // radio = mitad de alto → cápsula
+  const first = cellCenter(cells[0]);
+  const last  = cellCenter(cells[cells.length - 1]);
+
+  // Ángulo de rotación
+  const dx = last.x - first.x;
+  const dy = last.y - first.y;
+  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+  // Centro del bocadillo
+  const cx = (first.x + last.x) / 2;
+  const cy = (first.y + last.y) / 2;
+
+  // Longitud = distancia entre centros + un radio a cada lado
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const r = first.h / 2 + 3;   // radio = mitad de celda + padding
+  const width = dist + r * 2;
+  const height = r * 2;
+
   const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-  rect.setAttribute('x', minX - pad);
-  rect.setAttribute('y', minY - pad);
-  rect.setAttribute('width', maxX - minX + pad * 2);
-  rect.setAttribute('height', maxY - minY + pad * 2);
-  rect.setAttribute('rx', rx);
-  rect.setAttribute('ry', rx);
+  rect.setAttribute('x', cx - width / 2);
+  rect.setAttribute('y', cy - height / 2);
+  rect.setAttribute('width', width);
+  rect.setAttribute('height', height);
+  rect.setAttribute('rx', r);
+  rect.setAttribute('ry', r);
   rect.setAttribute('fill', 'none');
   rect.setAttribute('stroke', '#00ff88');
   rect.setAttribute('stroke-width', '2');
   rect.setAttribute('filter', 'drop-shadow(0 0 4px #00ff88)');
+  rect.setAttribute('transform', `rotate(${angle}, ${cx}, ${cy})`);
   rect.dataset.word = word;
   svg.appendChild(rect);
 }
@@ -622,5 +638,4 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
-
 
