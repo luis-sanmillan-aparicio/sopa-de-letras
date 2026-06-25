@@ -330,7 +330,7 @@ function buildGrid() {
 }
 
 function placeWord(word) {
-  const dirs = shuffle([...DIRECTIONS]);
+  const dirs = shuffle([[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]);
   const positions = shuffle(
     Array.from({length: GRID_SIZE * GRID_SIZE}, (_, i) => [Math.floor(i/GRID_SIZE), i%GRID_SIZE])
   );
@@ -343,7 +343,6 @@ function placeWord(word) {
       }
     }
   }
-  // Si no cabe, intentar sin diagonales
   return false;
 }
 
@@ -638,4 +637,5 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
+
 
