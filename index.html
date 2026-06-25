@@ -194,17 +194,29 @@
     #status.ok { color: var(--green); }
     #status.err { color: var(--magenta); }
 
-    /* ── Botón completada ── */
-    #btn-new.win {
-      border-color: var(--green);
+    /* ── Win overlay ── */
+    #win {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,10,18,0.92);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      padding: 24px;
+    }
+    #win.show { display: flex; }
+    #win h2 {
+      font-size: 2rem;
       color: var(--green);
-      text-shadow: 0 0 8px var(--green);
-      animation: blink 0.8s ease-in-out infinite;
+      text-shadow: 0 0 20px var(--green);
+      letter-spacing: 0.2em;
     }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
+    #win p { color: var(--text); font-size: 0.9rem; }
+    #win button { margin-top: 8px; }
 
     /* ── Loading ── */
     #loading {
@@ -251,6 +263,13 @@
 <div id="word-list"></div>
 <div id="status"></div>
 
+<!-- Win overlay -->
+<div id="win">
+  <h2>¡COMPLETADA!</h2>
+  <p id="win-msg"></p>
+  <button class="primary" onclick="newGame()">▶ OTRA PARTIDA</button>
+</div>
+
 <script>
 // ── Config ──────────────────────────────────────────
 // Cambia esto a la URL de tu Vercel una vez desplegado.
@@ -283,9 +302,7 @@ async function newGame() {
   foundWords.clear();
   selCells = [];
   selecting = false;
-  const btn = document.getElementById('btn-new');
-  btn.textContent = '▶ NUEVA PARTIDA';
-  btn.classList.remove('win');
+  document.getElementById('win').classList.remove('show');
   document.getElementById('loading').classList.add('show');
   document.getElementById('btn-new').disabled = true;
   setStatus('');
@@ -553,9 +570,10 @@ function setStatus(msg, type='') {
 
 function winGame() {
   clearTimer();
-  const btn = document.getElementById('btn-new');
-  btn.textContent = '✓ COMPLETADA · NUEVA PARTIDA';
-  btn.classList.add('win');
+  const m = Math.floor(seconds/60), s = seconds%60;
+  document.getElementById('win-msg').textContent =
+    `Encontradas todas las palabras en ${m > 0 ? m+'m ' : ''}${s}s`;
+  document.getElementById('win').classList.add('show');
 }
 
 function shuffle(arr) {
