@@ -149,10 +149,7 @@
       color: var(--cyan);
     }
     .cell.found {
-      background: rgba(0,255,136,0.12);
-      color: var(--found);
-      text-shadow: 0 0 6px var(--found);
-      border-color: rgba(0,255,136,0.2);
+      border-color: rgba(0,255,136,0.15);
     }
 
     /* ── Word List ── */
@@ -194,29 +191,17 @@
     #status.ok { color: var(--green); }
     #status.err { color: var(--magenta); }
 
-    /* ── Win overlay ── */
-    #win {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(10,10,18,0.92);
-      z-index: 100;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      text-align: center;
-      padding: 24px;
-    }
-    #win.show { display: flex; }
-    #win h2 {
-      font-size: 2rem;
+    /* ── Botón completada ── */
+    #btn-new.win {
+      border-color: var(--green);
       color: var(--green);
-      text-shadow: 0 0 20px var(--green);
-      letter-spacing: 0.2em;
+      text-shadow: 0 0 8px var(--green);
+      animation: blink 0.8s ease-in-out infinite;
     }
-    #win p { color: var(--text); font-size: 0.9rem; }
-    #win button { margin-top: 8px; }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
 
     /* ── Loading ── */
     #loading {
@@ -258,17 +243,11 @@
 
 <div id="grid-wrap">
   <div id="grid"></div>
+  <svg id="overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;"></svg>
 </div>
 
 <div id="word-list"></div>
 <div id="status"></div>
-
-<!-- Win overlay -->
-<div id="win">
-  <h2>¡COMPLETADA!</h2>
-  <p id="win-msg"></p>
-  <button class="primary" onclick="newGame()">▶ OTRA PARTIDA</button>
-</div>
 
 <script>
 // ── Config ──────────────────────────────────────────
@@ -302,7 +281,9 @@ async function newGame() {
   foundWords.clear();
   selCells = [];
   selecting = false;
-  document.getElementById('win').classList.remove('show');
+  const btn = document.getElementById('btn-new');
+  btn.textContent = '▶ NUEVA PARTIDA';
+  btn.classList.remove('win');
   document.getElementById('loading').classList.add('show');
   document.getElementById('btn-new').disabled = true;
   setStatus('');
@@ -318,6 +299,7 @@ async function newGame() {
 
     buildGrid();
     renderGrid();
+    clearOverlay();
     renderWordList();
     updateCounts();
     startTimer();
@@ -522,12 +504,62 @@ function highlightSelection() {
 
 function markFound(word) {
   if (!wordCells[word]) return;
+
+  // Marcar celdas con clase found (solo borde sutil)
   for (const {r,c} of wordCells[word]) {
     cellEls[r][c].classList.remove('selecting');
     cellEls[r][c].classList.add('found');
   }
+
+  // Marcar chip
   const chip = document.getElementById(`chip-${word}`);
   if (chip) chip.classList.add('found');
+
+  // Dibujar bocadillo SVG sobre las celdas
+  drawPill(word);
+}
+
+function drawPill(word) {
+  const cells = wordCells[word];
+  if (!cells || cells.length === 0) return;
+
+  const gridEl = document.getElementById('grid');
+  const svg = document.getElementById('overlay');
+  const gridRect = gridEl.getBoundingClientRect();
+
+  // Calcular bounding box de las celdas de la palabra
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const {r,c} of cells) {
+    const el = cellEls[r][c];
+    const rect = el.getBoundingClientRect();
+    const x = rect.left - gridRect.left;
+    const y = rect.top - gridRect.top;
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x + rect.width);
+    maxY = Math.max(maxY, y + rect.height);
+  }
+
+  const pad = 3;
+  const rx = (maxY - minY) / 2 + pad; // radio = mitad de alto → cápsula
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', minX - pad);
+  rect.setAttribute('y', minY - pad);
+  rect.setAttribute('width', maxX - minX + pad * 2);
+  rect.setAttribute('height', maxY - minY + pad * 2);
+  rect.setAttribute('rx', rx);
+  rect.setAttribute('ry', rx);
+  rect.setAttribute('fill', 'none');
+  rect.setAttribute('stroke', '#00ff88');
+  rect.setAttribute('stroke-width', '2');
+  rect.setAttribute('filter', 'drop-shadow(0 0 4px #00ff88)');
+  rect.dataset.word = word;
+  svg.appendChild(rect);
+}
+
+function clearOverlay() {
+  const svg = document.getElementById('overlay');
+  if (svg) svg.innerHTML = '';
 }
 
 function markHighlight(word, on) {
@@ -570,10 +602,9 @@ function setStatus(msg, type='') {
 
 function winGame() {
   clearTimer();
-  const m = Math.floor(seconds/60), s = seconds%60;
-  document.getElementById('win-msg').textContent =
-    `Encontradas todas las palabras en ${m > 0 ? m+'m ' : ''}${s}s`;
-  document.getElementById('win').classList.add('show');
+  const btn = document.getElementById('btn-new');
+  btn.textContent = '✓ COMPLETADA · NUEVA PARTIDA';
+  btn.classList.add('win');
 }
 
 function shuffle(arr) {
@@ -591,4 +622,5 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
+
 
