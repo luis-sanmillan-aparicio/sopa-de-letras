@@ -10,6 +10,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sopa" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #0a0a12;
@@ -31,7 +34,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Courier New', monospace;
+      font-family: 'Nunito', sans-serif;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
@@ -130,8 +133,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.85rem;
-      font-weight: bold;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
       letter-spacing: 0;
       background: var(--surface);
       border: 1px solid var(--border);
@@ -571,3 +575,4 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
+
