@@ -2,7 +2,7 @@
 // Sirve palabras aleatorias mezclando todo el banco
 
 const GITHUB_RAW_URL =
-  "https://github.com/luis-sanmillan-aparicio/sopa-de-letras/words.json";
+  "https://raw.githubusercontent.com/luis-sanmillan-aparicio/sopa-de-letras/main/words.json";
 
 const WORDS_PER_GAME = 10;
 
