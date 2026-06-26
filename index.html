@@ -342,7 +342,14 @@ function placeWord(word, allowedDirs) {
   const positions = shuffle(
     Array.from({length: GRID_SIZE * GRID_SIZE}, (_, i) => [Math.floor(i/GRID_SIZE), i%GRID_SIZE])
   );
-  for (const [r, c] of positions) {
+
+  // Primero intentar posiciones donde haya al menos una letra coincidente
+  const withMatch = positions.filter(([r,c]) =>
+    allowedDirs.some(([dr,dc]) => hasMatch(word, r, c, dr, dc))
+  );
+  const ordered = [...withMatch, ...positions.filter(p => !withMatch.includes(p))];
+
+  for (const [r, c] of ordered) {
     const dirs = shuffle([...allowedDirs]);
     for (const [dr, dc] of dirs) {
       if (canPlace(word, r, c, dr, dc)) {
@@ -350,6 +357,15 @@ function placeWord(word, allowedDirs) {
         return true;
       }
     }
+  }
+  return false;
+}
+
+function hasMatch(word, r, c, dr, dc) {
+  for (let i = 0; i < word.length; i++) {
+    const nr = r + dr*i, nc = c + dc*i;
+    if (nr < 0 || nr >= GRID_SIZE || nc < 0 || nc >= GRID_SIZE) return false;
+    if (grid[nr][nc] === word[i]) return true;
   }
   return false;
 }
@@ -560,7 +576,7 @@ function drawPill(word) {
 
   // Longitud = distancia entre centros + un radio a cada lado
   const dist = Math.sqrt(dx * dx + dy * dy);
-  const r = first.h / 2 + 3;   // radio = mitad de celda + padding
+  const r = first.h / 2;   // radio = exactamente mitad de celda
   const width = dist + r * 2;
   const height = r * 2;
 
@@ -645,6 +661,7 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
+
 
 
 
