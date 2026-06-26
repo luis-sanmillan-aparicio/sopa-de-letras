@@ -227,7 +227,7 @@
 
 <header>
   <h1>⠿ SOPA DE LETRAS</h1>
-  <div class="subtitle">fondo oscuro cuida tu vista</div>
+  <div class="subtitle">arcade word search</div>
 </header>
 
 <div class="controls">
@@ -297,7 +297,14 @@ async function newGame() {
     document.getElementById('loading').classList.remove('show');
     document.getElementById('btn-new').disabled = false;
 
-    buildGrid();
+    let attempts = 0;
+    do {
+      buildGrid();
+      attempts++;
+    } while (
+      words.some(w => !wordCells[w]) && attempts < 10
+    );
+
     renderGrid();
     clearOverlay();
     renderWordList();
