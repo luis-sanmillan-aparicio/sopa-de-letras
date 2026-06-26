@@ -1,3 +1,4 @@
+
 // api/words.js — Vercel Serverless Function
 // Coge palabras aleatorias de un diccionario público de español
 
@@ -28,9 +29,14 @@ export default async function handler(req, res) {
       /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ]+$/.test(w)
     );
 
-    const selected = shuffle([...filtered])
-      .slice(0, WORDS_PER_GAME)
-      .map(w => w.toUpperCase());
+    // Separar en cortas (3-5) y largas (6-14)
+    const short = filtered.filter(w => w.length <= 5);
+    const long  = filtered.filter(w => w.length > 5);
+
+    // Garantizar 3 cortas y 7 largas (o lo que haya disponible)
+    const selectedShort = shuffle([...short]).slice(0, 3);
+    const selectedLong  = shuffle([...long]).slice(0, WORDS_PER_GAME - selectedShort.length);
+    const selected = shuffle([...selectedShort, ...selectedLong]).map(w => w.toUpperCase());
 
     return res.status(200).json({ words: selected, count: selected.length });
   } catch (err) {
@@ -46,4 +52,3 @@ function shuffle(array) {
   }
   return array;
 }
-
