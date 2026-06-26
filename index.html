@@ -318,21 +318,16 @@ function buildGrid() {
   const shuffled = [...words].sort(() => Math.random() - 0.5);
   const anyDirs  = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
 
-  // Grupos de direcciones: 2 diag↘↗, 2 diag↙↖, 3 horizontal, 3 vertical
-  const dirGroups = shuffle([
-    [[1,1],[1,-1]],   // diagonales hacia abajo
-    [[-1,1],[-1,-1]], // diagonales hacia arriba
-    [[0,1],[0,-1]],   // horizontales
-    [[1,0],[-1,0]],   // verticales
+  // Una dirección por palabra, repartidas equitativamente entre las 8
+  // Para 10 palabras: cada dirección al menos 1 vez, 2 directions get 2
+  const dirPool = shuffle([
+    [0,1],[0,-1],[1,0],[-1,0],   // H y V
+    [1,1],[1,-1],[-1,1],[-1,-1], // 4 diagonales
+    [1,1],[0,1]                  // 2 extras aleatorias
   ]);
 
-  // Repartir 10 palabras: ~2-3 por grupo
-  const assignments = [0,0,0,1,1,1,2,2,3,3]; // índices de grupo por palabra
-  shuffle(assignments);
-
   shuffled.forEach((word, i) => {
-    const group = dirGroups[assignments[i]];
-    placeWord(word, group) || placeWord(word, anyDirs);
+    placeWord(word, [dirPool[i]]) || placeWord(word, anyDirs);
   });
 
   // Rellenar huecos con letras aleatorias
@@ -650,6 +645,7 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
+
 
 
 
