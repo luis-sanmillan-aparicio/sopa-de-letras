@@ -29,14 +29,16 @@ export default async function handler(req, res) {
       /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ]+$/.test(w)
     );
 
-    // Separar en cortas (3-5) y largas (6-14)
-    const short = filtered.filter(w => w.length <= 5);
-    const long  = filtered.filter(w => w.length > 5);
+    // Separar por tamaño
+    const three  = filtered.filter(w => w.length === 3);
+    const short  = filtered.filter(w => w.length >= 4 && w.length <= 5);
+    const long   = filtered.filter(w => w.length > 5);
 
-    // Garantizar 3 cortas y 7 largas (o lo que haya disponible)
-    const selectedShort = shuffle([...short]).slice(0, 3);
-    const selectedLong  = shuffle([...long]).slice(0, WORDS_PER_GAME - selectedShort.length);
-    const selected = shuffle([...selectedShort, ...selectedLong]).map(w => w.toUpperCase());
+    // Garantizar 2 de tres letras, 1 de cuatro-cinco, 7 largas
+    const sel3    = shuffle([...three]).slice(0, 2);
+    const sel45   = shuffle([...short]).slice(0, 1);
+    const selLong = shuffle([...long]).slice(0, WORDS_PER_GAME - sel3.length - sel45.length);
+    const selected = shuffle([...sel3, ...sel45, ...selLong]).map(w => w.toUpperCase());
 
     return res.status(200).json({ words: selected, count: selected.length });
   } catch (err) {
