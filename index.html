@@ -499,19 +499,16 @@ function endSelect() {
   if (words.includes(word) && !foundWords.has(word)) matched = word;
   else if (words.includes(wordRev) && !foundWords.has(wordRev)) matched = wordRev;
 
+  // Limpiar selecting de todo el grid en cualquier caso
+  for (let r = 0; r < GRID_SIZE; r++)
+    for (let c = 0; c < GRID_SIZE; c++)
+      cellEls[r][c].classList.remove('selecting');
+
   if (matched) {
-    for (let r = 0; r < GRID_SIZE; r++)
-      for (let c = 0; c < GRID_SIZE; c++)
-        cellEls[r][c].classList.remove('selecting');
     foundWords.add(matched);
     markFound(matched);
     updateCounts();
     if (foundWords.size === words.length) winGame();
-  } else {
-    // Limpiar selección
-    for (const {r,c} of selCells) {
-      if (!isCellFound(r,c)) cellEls[r][c].classList.remove('selecting');
-    }
   }
   selCells = [];
   selStart = null;
