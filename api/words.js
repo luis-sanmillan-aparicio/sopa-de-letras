@@ -5,8 +5,8 @@ const DICTIONARY_URL =
   "https://raw.githubusercontent.com/words/an-array-of-spanish-words/master/index.json";
 
 const WORDS_PER_GAME = 10;
-const MIN_LENGTH = 4;
-const MAX_LENGTH = 10;
+const MIN_LENGTH = 3;
+const MAX_LENGTH = 14;
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -46,3 +46,4 @@ function shuffle(array) {
   }
   return array;
 }
+
