@@ -14,10 +14,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet" />
   <style>
+    /* ── Temas ── */
     :root {
       --bg: #0a0a12;
       --surface: #12121e;
       --border: #1e1e32;
+      --border-outer: #2a2a44;
       --cyan: #00f5ff;
       --magenta: #ff00aa;
       --yellow: #ffe600;
@@ -26,7 +28,23 @@
       --dim: #555570;
       --found: #00ff88;
       --selected: rgba(0,245,255,0.25);
-      --cell: min(36px, calc((100vw - 24px) / 14));
+      --cell-mobile: min(36px, calc((100vw - 24px) / 14));
+    }
+
+    /* Modo claro */
+    body.light {
+      --bg: #f0f0f8;
+      --surface: #ffffff;
+      --border: #dde0ee;
+      --border-outer: #b0b4d0;
+      --cyan: #0077cc;
+      --magenta: #cc0077;
+      --yellow: #997700;
+      --green: #007744;
+      --text: #1a1a2e;
+      --dim: #8888aa;
+      --found: #007744;
+      --selected: rgba(0,119,204,0.18);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
@@ -36,34 +54,26 @@
       color: var(--text);
       font-family: 'Nunito', sans-serif;
       min-height: 100dvh;
+      overflow-x: hidden;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* ════════════════════════════════
+       MÓVIL — layout original
+       ════════════════════════════════ */
+    .layout-mobile {
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 16px 12px 32px;
-      overflow-x: hidden;
     }
 
-    /* ── Header ── */
-    header {
+    .layout-mobile header {
       text-align: center;
       margin-bottom: 20px;
     }
-    h1 {
-      font-size: clamp(1.4rem, 5vw, 2rem);
-      letter-spacing: 0.15em;
-      color: var(--cyan);
-      text-shadow: 0 0 12px var(--cyan), 0 0 30px rgba(0,245,255,0.3);
-      text-transform: uppercase;
-    }
-    .subtitle {
-      font-size: 0.72rem;
-      color: var(--dim);
-      letter-spacing: 0.2em;
-      margin-top: 4px;
-    }
 
-    /* ── Controls ── */
-    .controls {
+    .layout-mobile .controls {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
@@ -72,9 +82,137 @@
       width: 100%;
       max-width: 560px;
     }
+
+    .layout-mobile .stats {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 14px;
+      font-size: 0.78rem;
+      color: var(--dim);
+      letter-spacing: 0.1em;
+    }
+
+    .layout-mobile #grid-wrap {
+      margin-bottom: 20px;
+    }
+
+    .layout-mobile #word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-width: 560px;
+      margin-bottom: 20px;
+    }
+
+    /* ════════════════════════════════
+       TABLET/PC — layout dos columnas
+       ════════════════════════════════ */
+    .layout-desktop {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      min-height: 100dvh;
+      padding: 0;
+    }
+
+    /* Columna izquierda: solo la rejilla, pegada a bordes */
+    .layout-desktop .col-grid {
+      flex: 1 1 auto;
+      display: flex;
+      align-items: stretch;
+      padding: 0;
+      min-width: 0;
+    }
+
+    .layout-desktop #grid-wrap {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      margin: 0;
+    }
+
+    /* En desktop, el grid ocupa todo el espacio disponible */
+    .layout-desktop #grid {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Columna derecha: panel con controles */
+    .layout-desktop .col-panel {
+      flex: 0 0 260px;
+      min-width: 220px;
+      max-width: 300px;
+      background: var(--surface);
+      border-left: 1px solid var(--border-outer);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 18px 20px;
+      gap: 16px;
+      transition: background 0.25s;
+    }
+
+    .layout-desktop header {
+      text-align: center;
+    }
+
+    .layout-desktop .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .layout-desktop .stats {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--dim);
+      letter-spacing: 0.1em;
+    }
+
+    .layout-desktop #word-list {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-content: flex-start;
+      overflow-y: auto;
+    }
+
+    .layout-desktop #status {
+      text-align: center;
+    }
+
+    /* ── Tipografía común ── */
+    h1 {
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      letter-spacing: 0.15em;
+      color: var(--cyan);
+      text-shadow: 0 0 12px var(--cyan), 0 0 30px rgba(0,245,255,0.15);
+      text-transform: uppercase;
+      transition: color 0.25s, text-shadow 0.25s;
+    }
+    body.light h1 {
+      text-shadow: none;
+    }
+
+    .subtitle {
+      font-size: 0.68rem;
+      color: var(--dim);
+      letter-spacing: 0.12em;
+      margin-top: 4px;
+      cursor: pointer;
+      transition: color 0.2s;
+      text-decoration: underline dotted;
+    }
+    .subtitle:hover { color: var(--cyan); }
+
+    /* ── Botones y select ── */
     select, button {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-outer);
       color: var(--text);
       font-family: inherit;
       font-size: 0.8rem;
@@ -82,7 +220,7 @@
       border-radius: 4px;
       cursor: pointer;
       letter-spacing: 0.05em;
-      transition: border-color 0.2s, color 0.2s;
+      transition: border-color 0.2s, color 0.2s, background 0.25s;
       outline: none;
     }
     select:hover, button:hover {
@@ -94,76 +232,68 @@
       color: var(--cyan);
       text-shadow: 0 0 8px var(--cyan);
     }
+    body.light button.primary {
+      text-shadow: none;
+    }
     button:disabled {
       opacity: 0.4;
       cursor: default;
     }
 
-    /* ── Timer & Stats ── */
-    .stats {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 14px;
-      font-size: 0.78rem;
-      color: var(--dim);
-      letter-spacing: 0.1em;
-    }
-    .stats span b {
-      color: var(--cyan);
-    }
+    /* ── Stats ── */
+    .stats span b { color: var(--cyan); }
     #timer { color: var(--yellow); }
 
-    /* ── Grid ── */
+    /* ── Grid: sin cuadrícula interior ── */
     #grid-wrap {
       position: relative;
-      margin-bottom: 20px;
     }
+
     #grid {
       display: grid;
-      border: 1px solid var(--border);
+      border: 2px solid var(--border-outer);
       border-radius: 4px;
       overflow: hidden;
       user-select: none;
       touch-action: none;
-      box-shadow: 0 0 24px rgba(0,245,255,0.04);
     }
+
     .cell {
-      width: var(--cell);
-      height: var(--cell);
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: 'Nunito', sans-serif;
-      font-size: 0.9rem;
       font-weight: 800;
       letter-spacing: 0;
       background: var(--surface);
-      border: 1px solid var(--border);
+      /* Sin bordes entre celdas */
+      border: none;
       cursor: pointer;
       transition: background 0.08s, color 0.08s;
       color: var(--text);
       position: relative;
     }
+
     .cell.selecting {
       background: var(--selected);
       color: var(--cyan);
     }
+
     .cell.found {
-      border-color: rgba(0,255,136,0.15);
+      /* sin borde individual tampoco */
     }
 
-    /* ── Word List ── */
-    #word-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      max-width: 560px;
-      margin-bottom: 20px;
+    /* Tamaño de celda en móvil */
+    .layout-mobile .cell {
+      width: var(--cell-mobile);
+      height: var(--cell-mobile);
+      font-size: 0.9rem;
     }
+
+    /* ── Word List chips ── */
     .word-chip {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-outer);
       border-radius: 3px;
       padding: 5px 12px;
       font-size: 0.78rem;
@@ -175,9 +305,12 @@
       background: rgba(0,255,136,0.1);
       border-color: var(--found);
       color: var(--found);
-      text-shadow: 0 0 6px var(--found);
       text-decoration: line-through;
       opacity: 0.7;
+    }
+    body.light .word-chip.found {
+      background: rgba(0,119,68,0.08);
+      text-shadow: none;
     }
 
     /* ── Status ── */
@@ -186,16 +319,14 @@
       color: var(--dim);
       letter-spacing: 0.1em;
       height: 20px;
-      text-align: center;
     }
     #status.ok { color: var(--green); }
     #status.err { color: var(--magenta); }
 
-    /* ── Botón completada ── */
+    /* ── Win ── */
     #btn-new.win {
       border-color: var(--green);
       color: var(--green);
-      text-shadow: 0 0 8px var(--green);
       animation: blink 0.8s ease-in-out infinite;
     }
     @keyframes blink {
@@ -217,55 +348,126 @@
       50% { opacity: 0.3; }
     }
 
-    /* Mobile tweaks */
     @media (max-width: 400px) {
       .cell { font-size: 0.75rem; }
+    }
+
+    /* Separador visual en panel derecho */
+    .panel-divider {
+      border: none;
+      border-top: 1px solid var(--border-outer);
+      margin: 0;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>⠿ SOPA DE LETRAS</h1>
-  <div class="subtitle">la pantalla oscura cuida tu vista</div>
-</header>
+<script>
+  /* Detectar tablet/PC: ancho >= 768px Y no es iPhone/Android phone */
+  function isTabletOrDesktop() {
+    const ua = navigator.userAgent;
+    const isPhone = /iPhone|Android.*Mobile|Mobile.*Android/i.test(ua);
+    return !isPhone && window.innerWidth >= 768;
+  }
 
-<div class="controls">
-  <button class="primary" id="btn-new" onclick="newGame()" disabled>▶ NUEVA PARTIDA</button>
+  const IS_DESKTOP = isTabletOrDesktop();
+
+  /* Aplicar clase al wrapper principal según dispositivo */
+  document.addEventListener('DOMContentLoaded', () => {
+    const wrap = document.getElementById('main-wrap');
+    if (IS_DESKTOP) {
+      wrap.classList.add('layout-desktop');
+    } else {
+      wrap.classList.add('layout-mobile');
+    }
+    buildDesktopLayout();
+    newGame();
+  });
+
+  function buildDesktopLayout() {
+    const wrap = document.getElementById('main-wrap');
+    if (!IS_DESKTOP) return;
+
+    /* Columna izquierda: rejilla */
+    const colGrid = document.createElement('div');
+    colGrid.className = 'col-grid';
+
+    const gridWrap = document.getElementById('grid-wrap');
+    colGrid.appendChild(gridWrap);
+    wrap.appendChild(colGrid);
+
+    /* Columna derecha: panel */
+    const colPanel = document.createElement('div');
+    colPanel.className = 'col-panel';
+
+    colPanel.appendChild(document.querySelector('header'));
+
+    const hr1 = document.createElement('hr');
+    hr1.className = 'panel-divider';
+    colPanel.appendChild(hr1);
+
+    colPanel.appendChild(document.getElementById('loading'));
+    colPanel.appendChild(document.querySelector('.controls'));
+
+    const hr2 = document.createElement('hr');
+    hr2.className = 'panel-divider';
+    colPanel.appendChild(hr2);
+
+    colPanel.appendChild(document.querySelector('.stats'));
+
+    const hr3 = document.createElement('hr');
+    hr3.className = 'panel-divider';
+    colPanel.appendChild(hr3);
+
+    colPanel.appendChild(document.getElementById('word-list'));
+    colPanel.appendChild(document.getElementById('status'));
+
+    wrap.appendChild(colPanel);
+  }
+</script>
+
+<div id="main-wrap">
+
+  <header>
+    <h1>⠿ SOPA DE LETRAS</h1>
+    <div class="subtitle" id="toggle-theme" onclick="toggleTheme()">PULSAR PARA PANTALLA CLARA</div>
+  </header>
+
+  <div class="controls">
+    <button class="primary" id="btn-new" onclick="newGame()" disabled>▶ NUEVA PARTIDA</button>
+  </div>
+
+  <div id="loading">CARGANDO PALABRAS…</div>
+
+  <div class="stats">
+    <span>⏱ <b id="timer">00:00</b></span>
+    <span>✓ <b id="found-count">0</b> / <b id="total-count">0</b></span>
+  </div>
+
+  <div id="grid-wrap">
+    <div id="grid"></div>
+    <svg id="overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;"></svg>
+  </div>
+
+  <div id="word-list"></div>
+  <div id="status"></div>
+
 </div>
-
-<div id="loading">CARGANDO PALABRAS…</div>
-
-<div class="stats">
-  <span>⏱ <b id="timer">00:00</b></span>
-  <span>✓ <b id="found-count">0</b> / <b id="total-count">0</b></span>
-</div>
-
-<div id="grid-wrap">
-  <div id="grid"></div>
-  <svg id="overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;"></svg>
-</div>
-
-<div id="word-list"></div>
-<div id="status"></div>
 
 <script>
 // ── Config ──────────────────────────────────────────
-// Cambia esto a la URL de tu Vercel una vez desplegado.
-// En local puedes usar: '/api/words'
 const API_BASE = '/api/words';
-
-const GRID_SIZE = 14;         // 14×14
+const GRID_SIZE = 14;
 const DIRECTIONS = [
-  [0,1],[0,-1],[1,0],[-1,0],  // H y V
-  [1,1],[1,-1],[-1,1],[-1,-1] // Diagonales
+  [0,1],[0,-1],[1,0],[-1,0],
+  [1,1],[1,-1],[-1,1],[-1,-1]
 ];
 
 // ── Estado ──────────────────────────────────────────
-let grid = [];        // char[][]
-let cellEls = [];     // DOM refs
-let words = [];       // palabras a buscar
-let wordCells = {};   // word → [{r,c}]
+let grid = [];
+let cellEls = [];
+let words = [];
+let wordCells = {};
 let foundWords = new Set();
 let selecting = false;
 let selStart = null;
@@ -273,9 +475,16 @@ let selCells = [];
 let timerInterval = null;
 let seconds = 0;
 
-// ── Init ─────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => newGame());
+// ── Toggle tema ──────────────────────────────────────
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('toggle-theme').textContent =
+    isLight ? 'PULSAR PARA PANTALLA OSCURA' : 'PULSAR PARA PANTALLA CLARA';
+  // Redibujar pills (colores del overlay dependen del tema)
+  redrawAllPills();
+}
 
+// ── Nueva partida ─────────────────────────────────────
 async function newGame() {
   clearTimer();
   foundWords.clear();
@@ -285,7 +494,7 @@ async function newGame() {
   btn.textContent = '▶ NUEVA PARTIDA';
   btn.classList.remove('win');
   document.getElementById('loading').classList.add('show');
-  document.getElementById('btn-new').disabled = true;
+  btn.disabled = true;
   setStatus('');
 
   try {
@@ -295,49 +504,73 @@ async function newGame() {
 
     words = data.words.map(w => w.toUpperCase().replace(/\s/g,''));
     document.getElementById('loading').classList.remove('show');
-    document.getElementById('btn-new').disabled = false;
+    btn.disabled = false;
 
     let attempts = 0;
     do {
       buildGrid();
       attempts++;
-    } while (
-      words.some(w => !wordCells[w]) && attempts < 10
-    );
+    } while (words.some(w => !wordCells[w]) && attempts < 10);
 
     renderGrid();
     clearOverlay();
     renderWordList();
     updateCounts();
     startTimer();
+
+    // En desktop, ajustar tamaño de celdas al espacio disponible
+    if (IS_DESKTOP) requestAnimationFrame(fitDesktopGrid);
   } catch(e) {
     document.getElementById('loading').classList.remove('show');
-    document.getElementById('btn-new').disabled = false;
+    btn.disabled = false;
     setStatus('Error al obtener palabras: ' + e.message, 'err');
   }
 }
 
-// ── Grid builder ─────────────────────────────────────
+// ── Ajuste de tamaño de celda en desktop ──────────────
+function fitDesktopGrid() {
+  const colGrid = document.querySelector('.col-grid');
+  if (!colGrid) return;
+  const w = colGrid.clientWidth;
+  const h = colGrid.clientHeight;
+  if (!w || !h) return;
+  const cellSize = Math.floor(Math.min(w, h) / GRID_SIZE);
+  const gridEl = document.getElementById('grid');
+  gridEl.style.width = (cellSize * GRID_SIZE) + 'px';
+  gridEl.style.height = (cellSize * GRID_SIZE) + 'px';
+  // Actualizar todas las celdas
+  for (let r = 0; r < GRID_SIZE; r++) {
+    for (let c = 0; c < GRID_SIZE; c++) {
+      const cell = cellEls[r] && cellEls[r][c];
+      if (cell) {
+        cell.style.width = cellSize + 'px';
+        cell.style.height = cellSize + 'px';
+        cell.style.fontSize = Math.floor(cellSize * 0.55) + 'px';
+      }
+    }
+  }
+  // Redibujar pills encima
+  redrawAllPills();
+}
+
+window.addEventListener('resize', () => {
+  if (IS_DESKTOP) requestAnimationFrame(fitDesktopGrid);
+});
+
+// ── Grid builder ──────────────────────────────────────
 function buildGrid() {
   grid = Array.from({length: GRID_SIZE}, () => Array(GRID_SIZE).fill(''));
   wordCells = {};
-
   const shuffled = [...words].sort(() => Math.random() - 0.5);
-  const anyDirs  = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
-
-  // Una dirección por palabra, repartidas equitativamente entre las 8
-  // Para 10 palabras: cada dirección al menos 1 vez, 2 directions get 2
+  const anyDirs = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
   const dirPool = shuffle([
-    [0,1],[0,-1],[1,0],[-1,0],   // H y V
-    [1,1],[1,-1],[-1,1],[-1,-1], // 4 diagonales
-    [1,1],[0,1]                  // 2 extras aleatorias
+    [0,1],[0,-1],[1,0],[-1,0],
+    [1,1],[1,-1],[-1,1],[-1,-1],
+    [1,1],[0,1]
   ]);
-
   shuffled.forEach((word, i) => {
     placeWord(word, [dirPool[i]]) || placeWord(word, anyDirs);
   });
-
-  // Rellenar huecos con letras aleatorias
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   for (let r = 0; r < GRID_SIZE; r++)
     for (let c = 0; c < GRID_SIZE; c++)
@@ -349,13 +582,10 @@ function placeWord(word, allowedDirs) {
   const positions = shuffle(
     Array.from({length: GRID_SIZE * GRID_SIZE}, (_, i) => [Math.floor(i/GRID_SIZE), i%GRID_SIZE])
   );
-
-  // Primero intentar posiciones donde haya al menos una letra coincidente
   const withMatch = positions.filter(([r,c]) =>
     allowedDirs.some(([dr,dc]) => hasMatch(word, r, c, dr, dc))
   );
   const ordered = [...withMatch, ...positions.filter(p => !withMatch.includes(p))];
-
   for (const [r, c] of ordered) {
     const dirs = shuffle([...allowedDirs]);
     for (const [dr, dc] of dirs) {
@@ -398,7 +628,9 @@ function doPlace(word, r, c, dr, dc) {
 // ── Render ────────────────────────────────────────────
 function renderGrid() {
   const el = document.getElementById('grid');
-  el.style.gridTemplateColumns = `repeat(${GRID_SIZE}, var(--cell))`;
+  el.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 1fr)`;
+  el.style.width = '';
+  el.style.height = '';
   el.innerHTML = '';
   cellEls = [];
 
@@ -411,12 +643,10 @@ function renderGrid() {
       div.dataset.r = r;
       div.dataset.c = c;
 
-      // Mouse
       div.addEventListener('mousedown', e => { e.preventDefault(); startSelect(r,c); });
       div.addEventListener('mouseover', () => { if (selecting) moveSelect(r,c); });
       div.addEventListener('mouseup', () => endSelect());
 
-      // Touch
       div.addEventListener('touchstart', e => {
         e.preventDefault();
         startSelect(r,c);
@@ -433,9 +663,9 @@ function renderGrid() {
     if (!selecting) return;
     e.preventDefault();
     const t = e.touches[0];
-    const el = document.elementFromPoint(t.clientX, t.clientY);
-    if (el && el.classList.contains('cell')) {
-      moveSelect(+el.dataset.r, +el.dataset.c);
+    const target = document.elementFromPoint(t.clientX, t.clientY);
+    if (target && target.classList.contains('cell')) {
+      moveSelect(+target.dataset.r, +target.dataset.c);
     }
   }, {passive: false});
 }
@@ -462,7 +692,7 @@ function renderWordList() {
   }
 }
 
-// ── Selection logic ────────────────────────────────────
+// ── Selección ─────────────────────────────────────────
 function startSelect(r, c) {
   selecting = true;
   selStart = {r, c};
@@ -472,20 +702,16 @@ function startSelect(r, c) {
 
 function moveSelect(r, c) {
   if (!selStart) return;
-  // Calcular dirección desde selStart a (r,c)
   const dr = r - selStart.r;
   const dc = c - selStart.c;
   const cells = [];
-
   if (dr === 0 && dc === 0) {
     cells.push(selStart);
   } else {
-    // Normalizar a una de las 8 direcciones
     let stepR = 0, stepC = 0;
     if (Math.abs(dr) === Math.abs(dc)) { stepR = Math.sign(dr); stepC = Math.sign(dc); }
     else if (Math.abs(dr) > Math.abs(dc)) { stepR = Math.sign(dr); stepC = 0; }
     else { stepR = 0; stepC = Math.sign(dc); }
-
     const steps = Math.max(Math.abs(dr), Math.abs(dc));
     for (let i = 0; i <= steps; i++) {
       cells.push({r: selStart.r + stepR*i, c: selStart.c + stepC*i});
@@ -498,15 +724,12 @@ function moveSelect(r, c) {
 function endSelect() {
   if (!selecting) return;
   selecting = false;
-
   const word = selCells.map(({r,c}) => grid[r][c]).join('');
   const wordRev = word.split('').reverse().join('');
-
   let matched = null;
   if (words.includes(word) && !foundWords.has(word)) matched = word;
   else if (words.includes(wordRev) && !foundWords.has(wordRev)) matched = wordRev;
 
-  // Limpiar selecting de todo el grid en cualquier caso
   for (let r = 0; r < GRID_SIZE; r++)
     for (let c = 0; c < GRID_SIZE; c++)
       cellEls[r][c].classList.remove('selecting');
@@ -522,11 +745,9 @@ function endSelect() {
 }
 
 function highlightSelection() {
-  // Reset selecting (no found)
   for (let r = 0; r < GRID_SIZE; r++)
     for (let c = 0; c < GRID_SIZE; c++)
       cellEls[r][c].classList.remove('selecting');
-
   for (const {r,c} of selCells) {
     cellEls[r][c].classList.add('selecting');
   }
@@ -534,19 +755,18 @@ function highlightSelection() {
 
 function markFound(word) {
   if (!wordCells[word]) return;
-
-  // Marcar celdas con clase found (solo borde sutil)
   for (const {r,c} of wordCells[word]) {
     cellEls[r][c].classList.remove('selecting');
     cellEls[r][c].classList.add('found');
   }
-
-  // Marcar chip
   const chip = document.getElementById(`chip-${word}`);
   if (chip) chip.classList.add('found');
-
-  // Dibujar bocadillo SVG sobre las celdas
   drawPill(word);
+}
+
+// ── Overlay SVG ───────────────────────────────────────
+function getPillColor() {
+  return document.body.classList.contains('light') ? '#007744' : '#00ff88';
 }
 
 function drawPill(word) {
@@ -557,7 +777,6 @@ function drawPill(word) {
   const svg = document.getElementById('overlay');
   const gridRect = gridEl.getBoundingClientRect();
 
-  // Centro de la primera y última celda
   function cellCenter(cell) {
     const el = cellEls[cell.r][cell.c];
     const rect = el.getBoundingClientRect();
@@ -571,19 +790,13 @@ function drawPill(word) {
 
   const first = cellCenter(cells[0]);
   const last  = cellCenter(cells[cells.length - 1]);
-
-  // Ángulo de rotación
   const dx = last.x - first.x;
   const dy = last.y - first.y;
   const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-  // Centro del bocadillo
   const cx = (first.x + last.x) / 2;
   const cy = (first.y + last.y) / 2;
-
-  // Longitud = distancia entre centros + un radio a cada lado
   const dist = Math.sqrt(dx * dx + dy * dy);
-  const r = first.h / 2;   // radio = exactamente mitad de celda
+  const r = first.h / 2;
   const width = dist + r * 2;
   const height = r * 2;
 
@@ -595,12 +808,16 @@ function drawPill(word) {
   rect.setAttribute('rx', r);
   rect.setAttribute('ry', r);
   rect.setAttribute('fill', 'none');
-  rect.setAttribute('stroke', '#00ff88');
-  rect.setAttribute('stroke-width', '2');
-  rect.setAttribute('filter', 'drop-shadow(0 0 4px #00ff88)');
+  rect.setAttribute('stroke', getPillColor());
+  rect.setAttribute('stroke-width', '2.5');
   rect.setAttribute('transform', `rotate(${angle}, ${cx}, ${cy})`);
   rect.dataset.word = word;
   svg.appendChild(rect);
+}
+
+function redrawAllPills() {
+  clearOverlay();
+  for (const w of foundWords) drawPill(w);
 }
 
 function clearOverlay() {
@@ -613,10 +830,6 @@ function markHighlight(word, on) {
   for (const {r,c} of wordCells[word]) {
     cellEls[r][c].classList.toggle('selecting', on);
   }
-}
-
-function isCellFound(r, c) {
-  return cellEls[r][c].classList.contains('found');
 }
 
 // ── Timer ─────────────────────────────────────────────
@@ -668,7 +881,6 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
-
 
 
 
