@@ -469,6 +469,7 @@ let cellEls = [];
 let words = [];
 let wordCells = {};
 let foundWords = new Set();
+let foundWordCells = {};
 let selecting = false;
 let selStart = null;
 let selCells = [];
@@ -488,6 +489,7 @@ function toggleTheme() {
 async function newGame() {
   clearTimer();
   foundWords.clear();
+  foundWordCells = {};
   selCells = [];
   selecting = false;
   const btn = document.getElementById('btn-new');
@@ -736,7 +738,7 @@ function endSelect() {
 
   if (matched) {
     foundWords.add(matched);
-    markFound(matched);
+    markFound(matched, [...selCells]);
     updateCounts();
     if (foundWords.size === words.length) winGame();
   }
@@ -753,15 +755,17 @@ function highlightSelection() {
   }
 }
 
-function markFound(word) {
-  if (!wordCells[word]) return;
-  for (const {r,c} of wordCells[word]) {
+function markFound(word, cells) {
+  const useCells = cells || wordCells[word];
+  if (!useCells) return;
+  foundWordCells[word] = useCells;
+  for (const {r,c} of useCells) {
     cellEls[r][c].classList.remove('selecting');
     cellEls[r][c].classList.add('found');
   }
   const chip = document.getElementById(`chip-${word}`);
   if (chip) chip.classList.add('found');
-  drawPill(word);
+  drawPill(word, useCells);
 }
 
 // ── Overlay SVG ───────────────────────────────────────
@@ -769,8 +773,8 @@ function getPillColor() {
   return document.body.classList.contains('light') ? '#007744' : '#00ff88';
 }
 
-function drawPill(word) {
-  const cells = wordCells[word];
+function drawPill(word, cells) {
+  cells = cells || foundWordCells[word] || wordCells[word];
   if (!cells || cells.length === 0) return;
 
   const gridEl = document.getElementById('grid');
@@ -881,6 +885,4 @@ function shuffle(arr) {
 </script>
 </body>
 </html>
-
-
 
